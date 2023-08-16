@@ -40,13 +40,24 @@ fi
 # Restart SSH service
 sudo /etc/init.d/ssh restart
 
+# Add a delay of 5 seconds (for example)
+sleep 2
+
 # Prompt user for SSH or SSL mode
 echo -e "${YELLOW}Select mode: 1: SSH 2: SSL${NC}"
 read mode
 
+#sleep
+sleep 2
+
 # Prompt user for NS domain
 echo -e "${YELLOW}Enter your NS domain:${NC}"
 read ns_domain
+
+sleep 2
+
+# Add your command here (e.g., cd /root/dnstt/dnstt-server)
+cd /root/dnstt/dnstt-server
 
 # Configure and start dnstt-server based on the mode
 if [ "$mode" -eq 1 ]; then
