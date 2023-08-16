@@ -24,18 +24,18 @@ read
 
 # Edit sshd_config
 sudo nano /etc/ssh/sshd_config
-echo -e "${YELLOW}Make sure to add 'AllowTcpForwarding yes' in the config. Press Enter when done${NC}"
+echo -e "${YELLOW}Make sure you've set 'AllowTcpForwarding yes' in the config. Press Enter when done${NC}"
 read
 
 # Restart SSH service
 sudo service ssh restart
 
 # Prompt user for SSH or SSL mode
-echo -e "${YELLOW}Select mode: 1) SSH 2) SSL${NC}"
+echo -e "${YELLOW}Select mode: 1: SSH 2: SSL${NC}"
 read mode
 
 # Prompt user for NS domain
-echo -e "${YELLOW}Enter NS domain:${NC}"
+echo -e "${YELLOW}Enter your NS domain:${NC}"
 read ns_domain
 
 # Configure and start dnstt-server based on the mode
