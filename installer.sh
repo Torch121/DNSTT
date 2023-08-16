@@ -22,6 +22,10 @@ cat server.pub
 echo -e "${YELLOW}Copy the pubkey above and press Enter when done${NC}"
 read
 
+# Prompt the user to set AllowTcpForwarding yes
+echo -e "${YELLOW}In the next step, look for AllowTcpForwarding and set it to 'yes' or uncomment it${NC}"
+read -p "Press Enter when you're ready to continue..."
+
 # Edit sshd_config
 sudo nano /etc/ssh/sshd_config
 
