@@ -19,7 +19,7 @@ go build
 
 # Display the contents of server.pub and prompt the user to copy it
 cat server.pub
-echo -e "${YELLOW}Copy the content above and press Enter when done${NC}"
+echo -e "${YELLOW}Copy the pubkey above and press Enter when done${NC}"
 read
 
 # Ask for confirmation
