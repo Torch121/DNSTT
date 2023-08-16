@@ -8,8 +8,9 @@ sudo apt install -y golang-go
 
 # Clone the repository and build the server
 cd /root
-git clone --no-check-certificate https://www.bamsoftware.com/git/dnstt.git
-cd dnstt/dnstt-server
+curl -LJO --insecure https://www.bamsoftware.com/git/dnstt.git/archive/master.tar.gz
+tar -zxvf dnstt.git-master.tar.gz
+cd dnstt.git-master/dnstt-server
 go build
 
 # Generate key pair
