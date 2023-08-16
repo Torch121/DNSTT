@@ -6,7 +6,7 @@ sudo apt install git nano golang-go -y
 
 # Clone the repository and build dnstt-server
 cd /root
-git clone https://www.bamsoftware.com/git/dnstt.git
+git clone http://www.bamsoftware.com/git/dnstt.git
 cd root/dnstt/dnstt-server
 go build
 
