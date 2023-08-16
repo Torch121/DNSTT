@@ -1,49 +1,54 @@
 #!/bin/bash
 
-# Update and install necessary packages
-sudo apt update
-sudo apt install git nano golang-go -y
+# Define ANSI color codes
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
 
-# Clone the repository and build dnstt-server
+# Install necessary packages
+sudo apt update
+sudo apt install -y git golang-go
+
+# Clone the repository and build the server
 cd /root
-git clone http://www.bamsoftware.com/git/dnstt.git
+git clone https://www.bamsoftware.com/git/dnstt.git
 cd dnstt/dnstt-server
 go build
 
-# Generate server key pair and show the content of "server.pub"
+# Generate key pair
 ./dnstt-server -gen-key -privkey-file server.key -pubkey-file server.pub
-cat server.pub
-read -p "Copy the content above and press Enter after you've copied it."
 
-# Edit the sshd_config file
-nano /etc/ssh/sshd_config
-read -p "Make the manual edit in the file, then press Enter after you've saved it."
+# Display the contents of server.pub and prompt the user to copy it
+cat server.pub
+echo -e "${YELLOW}Copy the content above and press Enter when done${NC}"
+read
+
+# Edit sshd_config
+sudo nano /etc/ssh/sshd_config
+echo -e "${YELLOW}Make sure to add 'AllowTcpForwarding yes' in the config. Press Enter when done${NC}"
+read
 
 # Restart SSH service
-/etc/init.d/ssh restart
+sudo service ssh restart
 
-# Ask user to select mode
-echo "Select a mode:"
-echo "1. SSH"
-echo "2. SSL"
-read -p "Enter 1 or 2: " mode
+# Prompt user for SSH or SSL mode
+echo -e "${YELLOW}Select mode: 1) SSH 2) SSL${NC}"
+read mode
 
-# Ask user for NS domain
-read -p "Enter the NS (Nameserver) domain: " ns_domain
+# Prompt user for NS domain
+echo -e "${YELLOW}Enter NS domain:${NC}"
+read ns_domain
 
-if [ $mode -eq 1 ]; then
-    # SSH mode
-    cd /root/dnstt/dnstt-server
-    screen -dmS slowdns ./dnstt-server -udp :5300 -privkey-file server.key $ns_domain 127.0.0.1:22
-elif [ $mode -eq 2 ]; then
-    # SSL mode
-    screen -dmS slowdns ./dnstt-server -udp :5300 -privkey-file server.key $ns_domain 127.0.0.1:443
+# Configure and start dnstt-server based on the mode
+if [ "$mode" -eq 1 ]; then
+    screen -dmS slowdns ./dnstt-server -udp :5300 -privkey-file server.key "$ns_domain" 127.0.0.1:22
+else
+    screen -dmS slowdns ./dnstt-server -udp :5300 -privkey-file server.key "$ns_domain" 127.0.0.1:443
 fi
 
-# Set up iptables rules
+# Configure iptables rules for IPv4/IPv6
 sudo iptables -I INPUT -p udp --dport 5300 -j ACCEPT
 sudo iptables -t nat -I PREROUTING -i eth0 -p udp --dport 53 -j REDIRECT --to-ports 5300
 sudo ip6tables -I INPUT -p udp --dport 5300 -j ACCEPT
 sudo ip6tables -t nat -I PREROUTING -i eth0 -p udp --dport 53 -j REDIRECT --to-ports 5300
 
-echo "Script completed successfully!"
+echo -e "${YELLOW}Installation and configuration completed!${NC}"
