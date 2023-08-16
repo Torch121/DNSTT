@@ -22,6 +22,9 @@ cat server.pub
 echo -e "${YELLOW}Copy the pubkey above and press Enter when done${NC}"
 read
 
+# Edit sshd_config
+sudo nano /etc/ssh/sshd_config
+
 # Ask for confirmation
 echo -e "${YELLOW}Did you set 'AllowTcpForwarding yes' in the config? (y/n): ${NC}"
 read confirmation
