@@ -2,6 +2,8 @@
 
 # Install necessary packages
 sudo apt update
+sudo apt install nano
+sudo apt install git
 sudo apt install -y golang-go
 
 # Clone the repository and build the server
