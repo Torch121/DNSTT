@@ -22,13 +22,16 @@ cat server.pub
 echo -e "${YELLOW}Copy the content above and press Enter when done${NC}"
 read
 
-# Edit sshd_config
-sudo nano /etc/ssh/sshd_config
-echo -e "${YELLOW}Make sure you've set 'AllowTcpForwarding yes' in the config. Press Enter when done${NC}"
-read
+# Ask for confirmation
+echo -e "${YELLOW}Did you set 'AllowTcpForwarding yes' in the config? (y/n): ${NC}"
+read confirmation
+if [ "$confirmation" != "y" ]; then
+    echo -e "${YELLOW}Please make sure to set 'AllowTcpForwarding yes' in the config.${NC}"
+    exit 1
+fi
 
 # Restart SSH service
-sudo service ssh restart
+sudo /etc/init.d/ssh restart
 
 # Prompt user for SSH or SSL mode
 echo -e "${YELLOW}Select mode: 1: SSH 2: SSL${NC}"
@@ -50,5 +53,6 @@ sudo iptables -I INPUT -p udp --dport 5300 -j ACCEPT
 sudo iptables -t nat -I PREROUTING -i eth0 -p udp --dport 53 -j REDIRECT --to-ports 5300
 sudo ip6tables -I INPUT -p udp --dport 5300 -j ACCEPT
 sudo ip6tables -t nat -I PREROUTING -i eth0 -p udp --dport 53 -j REDIRECT --to-ports 5300
+lsof -i :5300
 
 echo -e "${YELLOW}Installation and configuration completed!${NC}"
