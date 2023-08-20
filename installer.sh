@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# logo
+echo -e "
+${YELLOW}
+        _        _         
+       | |      | |        
+   ___ | |_ ___ | | _____  
+  / _ \| __/ _ \| |/ / _ \ 
+ | (_) | || (_) |   < (_) |
+  \___/ \__\___/|_|\_\___/" 
+
 # Define ANSI color codes
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
