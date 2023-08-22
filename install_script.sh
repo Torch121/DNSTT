@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Function to install dnstt script
+# Function to install dnstt
 install_dnstt() {
     #!/bin/bash
 
@@ -92,10 +92,6 @@ echo -e "${YELLOW}Installation and configuration completed!${NC}"
 
 # Function to change nameserver
 change_nameserver() {
-    #!/bin/bash
-
-# Function to change nameserver
-change_nameserver() {
     new_ns="$1"
     
     # Extract old PID and kill if exists
@@ -112,9 +108,7 @@ change_nameserver() {
     else
         screen -dmS slowdns ./dnstt-server -udp :5300 -privkey-file server.key "$new_ns" 127.0.0.1:443
     fi
-    echo -e "${YELLOW}Nameserver changed to: $new_ns${NC}"
-}
-
+    echo -e "Nameserver changed to: $new_ns"
 }
 
 # Check if the script is being installed or run with commands
