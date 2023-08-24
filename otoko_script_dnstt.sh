@@ -3,11 +3,9 @@
 # Step 1: Install dnstt if not already installed
 if ! command -v dnstt-server &> /dev/null; then
     echo "Installing dnstt..."
-    # Insert the DNSTT installation script content here
-    #!/bin/bash
 
-# logo
-echo -e "
+    # dnstt installation script content
+    echo -e "
 ${YELLOW}
         _        _         
        | |      | |        
@@ -122,11 +120,12 @@ if ! grep -q 'alias setns' ~/.bashrc; then
     echo "Setting up 'setns' alias..."
     echo "alias setns=\"$resetting_ns_script\"" >> ~/.bashrc
     source ~/.bashrc
+    echo "'setns' alias has been set up."
 else
     echo "'setns' alias already exists."
 fi
 
 # Run the "resetting NS" script if invoked with "setns" argument
 if [ "$1" == "setns" ]; then
-    setns
+    bash -c "$resetting_ns_script"
 fi
