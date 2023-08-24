@@ -1,7 +1,9 @@
 #!/bin/bash
 
-# Function to install dnstt
-install_dnstt() {
+# Step 1: Install dnstt if not already installed
+if ! command -v dnstt-server &> /dev/null; then
+    echo "Installing dnstt..."
+    # Insert the DNSTT installation script content here
     #!/bin/bash
 
 # logo
@@ -88,48 +90,43 @@ sudo ip6tables -t nat -I PREROUTING -i eth0 -p udp --dport 53 -j REDIRECT --to-p
 lsof -i :5300
 
 echo -e "${YELLOW}Installation and configuration completed!${NC}"
-}
-
-# Function to change nameserver
-change_nameserver() {
-    new_ns="$1"
-    
-    # Extract old PID and kill if exists
-    old_pid=$(lsof -i :5300 | awk 'NR==2{print $2}')
-    if [ ! -z "$old_pid" ]; then
-        echo "Killing old connection with PID: $old_pid"
-        kill "$old_pid"
-    fi
-    
-    # Change directory and apply the command again
-    cd /root/dnstt/dnstt-server
-    if [ "$mode" == "1" ]; then
-        screen -dmS slowdns ./dnstt-server -udp :5300 -privkey-file server.key "$new_ns" 127.0.0.1:22
-    else
-        screen -dmS slowdns ./dnstt-server -udp :5300 -privkey-file server.key "$new_ns" 127.0.0.1:443
-    fi
-    echo -e "Nameserver changed to: $new_ns"
-}
-
-# Check if the script is being installed or run with commands
-if [ $# -eq 0 ]; then
-    echo "Please provide a command (installdnstt or setns)."
-    exit 1
+else
+    echo "dnstt is already installed."
 fi
 
-case "$1" in
-    installdnstt)
-        install_dnstt
-        ;;
-    setns)
-        if [ $# -ne 2 ]; then
-            echo "Usage: $0 setns [new_nameserver_by_user]"
-            exit 1
-        fi
-        change_nameserver "$2"
-        ;;
-    *)
-        echo "Unrecognized command. Usage: $0 (installdnstt | setns [new_nameserver_by_user])"
-        exit 1
-        ;;
-esac
+# Step 2: Define the "resetting NS" script
+resetting_ns_script='
+#!/bin/bash
+
+# Step 1: Identify and kill the process using port 5300
+pid=$(lsof -i :5300 -t)
+if [ -n "$pid" ]; then
+  echo "Killing process with PID $pid"
+  kill $pid
+else
+  echo "No process found using port 5300"
+fi
+
+# Step 2: Move to dnstt-server directory and get new nameserver input
+cd /root/dnstt/dnstt-server
+read -p "Enter the new nameserver: " new_nameserver
+
+# Step 3: Start dnstt-server using screen
+screen -dmS slowdns ./dnstt-server -udp :5300 -privkey-file server.key $new_nameserver 127.0.0.1:22
+
+echo "dnstt-server started with new nameserver: $new_nameserver"
+'
+
+# Step 3: Set up an alias for "setns" command
+if ! grep -q 'alias setns' ~/.bashrc; then
+    echo "Setting up 'setns' alias..."
+    echo "alias setns=\"$resetting_ns_script\"" >> ~/.bashrc
+    source ~/.bashrc
+else
+    echo "'setns' alias already exists."
+fi
+
+# Run the "resetting NS" script if invoked with "setns" argument
+if [ "$1" == "setns" ]; then
+    setns
+fi
